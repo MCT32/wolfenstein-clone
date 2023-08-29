@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 winit = "0.29.1-beta"
+softbuffer = "0.3.0"
