@@ -6,7 +6,7 @@ use winit::{
 };
 
 fn main() {
-    let event_loop = EventLoop::new().unwrap();
+    let event_loop = EventLoop::new();
     let window = WindowBuilder::new().build(&event_loop).unwrap();
 
     let context = unsafe { softbuffer::Context::new(&window) }.unwrap();
@@ -23,7 +23,7 @@ fn main() {
                 println!("Close requested, exiting...");
                 control_flow.set_exit();
             },
-            Event::RedrawRequested(window_id) => {
+            Event::MainEventsCleared => {
                 let (width, height) = {
                     let size = window.inner_size();
                     (size.width, size.height)
@@ -50,5 +50,5 @@ fn main() {
             },
             _ => ()
         }
-    }).unwrap();
+    });
 }
