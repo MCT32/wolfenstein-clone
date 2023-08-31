@@ -39,15 +39,7 @@ fn main() {
                     .unwrap();
                 
                 let mut buffer = surface.buffer_mut().unwrap();
-                for index in 0..(WIDTH * HEIGHT) {
-                    let y = index / WIDTH;
-                    let x = index % WIDTH;
-                    let red = x % 200;
-                    let green = y % 200;
-                    let blue = (x * y) % 200;
-
-                    buffer[index as usize] = blue | (green << 8) | (red << 16);
-                }
+                for pixel in buffer.iter_mut() { *pixel = 0xffffffffu32; }
 
                 buffer.present().unwrap();
             },
