@@ -3,11 +3,18 @@ use winit::{
     event::{Event, WindowEvent},
     event_loop::EventLoop,
     window::WindowBuilder,
+    dpi::LogicalSize,
 };
+
+const WIDTH: u32 = 320;
+const HEIGHT: u32 = 200;
 
 fn main() {
     let event_loop = EventLoop::new();
-    let window = WindowBuilder::new().build(&event_loop).unwrap();
+    let window = WindowBuilder::new()
+        .with_inner_size(LogicalSize::new(WIDTH, HEIGHT))
+        .with_resizable(false)
+        .build(&event_loop).unwrap();
 
     let context = unsafe { softbuffer::Context::new(&window) }.unwrap();
     let mut surface = unsafe { softbuffer::Surface::new(&context, &window) }.unwrap();
@@ -23,30 +30,29 @@ fn main() {
                 println!("Close requested, exiting...");
                 control_flow.set_exit();
             },
-            Event::MainEventsCleared => {
-                let (width, height) = {
-                    let size = window.inner_size();
-                    (size.width, size.height)
-                };
+            Event::RedrawRequested(_) => {
                 surface
                     .resize(
-                        NonZeroU32::new(width).unwrap(),
-                        NonZeroU32::new(height).unwrap(),
+                        NonZeroU32::new(WIDTH).unwrap(),
+                        NonZeroU32::new(HEIGHT).unwrap(),
                     )
                     .unwrap();
                 
                 let mut buffer = surface.buffer_mut().unwrap();
-                for index in 0..(width * height) {
-                    let y = index / width;
-                    let x = index % width;
-                    let red = x % 255;
-                    let green = y % 255;
-                    let blue = (x * y) % 255;
+                for index in 0..(WIDTH * HEIGHT) {
+                    let y = index / WIDTH;
+                    let x = index % WIDTH;
+                    let red = x % 200;
+                    let green = y % 200;
+                    let blue = (x * y) % 200;
 
                     buffer[index as usize] = blue | (green << 8) | (red << 16);
                 }
 
                 buffer.present().unwrap();
+            },
+            Event::MainEventsCleared => {
+                window.request_redraw();
             },
             _ => ()
         }
