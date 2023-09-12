@@ -2,7 +2,7 @@ use std::num::NonZeroU32;
 use std::time::Instant;
 use std::f32::consts::PI;
 use winit::{
-    event::{Event, WindowEvent},
+    event::{Event, WindowEvent, DeviceEvent, ElementState, VirtualKeyCode},
     event_loop::EventLoop,
     window::WindowBuilder,
     dpi::LogicalSize,
@@ -46,16 +46,40 @@ fn main() {
 
     let mut last = Instant::now();
 
+    let mut keys_pressed = Vec::new();
+
     event_loop.run(move |event, _, control_flow| {
         control_flow.set_poll();
 
         match event {
             Event::WindowEvent {
-                event: WindowEvent::CloseRequested,
+                event,
                 ..
             } => {
-                println!("Close requested, exiting...");
-                control_flow.set_exit();
+                match event {
+                    WindowEvent::CloseRequested => {
+                        println!("Close requested, exiting...");
+                        control_flow.set_exit();
+                    }
+                    WindowEvent::KeyboardInput {
+                        input,
+                        ..
+                    } => {
+                        if let Some(keycode) = input.virtual_keycode {
+                            match input.state {
+                                ElementState::Pressed => {
+                                    if !keys_pressed.contains(&keycode) {
+                                        keys_pressed.push(keycode);
+                                    }
+                                }
+                                ElementState::Released => {
+                                    keys_pressed.retain(|&k| k != keycode);
+                                }
+                            }
+                        }
+                    },
+                    _ => ()
+                }
             },
             Event::RedrawRequested(_) => {
                 let delta_time = last.elapsed();
@@ -73,13 +97,26 @@ fn main() {
 
                 render::render(&map, &player, &mut buffer);
 
+                player.setVelocity(vector::Vec2::new(
+                    if keys_pressed.contains(&VirtualKeyCode::D) { 1.0 } else { 0.0 }
+                    + if keys_pressed.contains(&VirtualKeyCode::A) { -1.0 } else { 0.0 },
+                    if keys_pressed.contains(&VirtualKeyCode::W) { 1.0 } else { 0.0 }
+                    + if keys_pressed.contains(&VirtualKeyCode::S) { -1.0 } else { 0.0 }
+                ).rotate(player.rotation));
                 player.update(delta_time);
-                player.rotation -= PI * 0.1 * delta_time.as_secs_f32();
 
                 buffer.present().unwrap();
             },
             Event::MainEventsCleared => {
                 window.request_redraw();
+            },
+            Event::DeviceEvent { device_id, event } => {
+                match event {
+                    DeviceEvent::MouseMotion { delta } => {
+                        player.rotation -= PI * 0.001 * delta.0 as f32;
+                    },
+                    _ => ()
+                }
             },
             _ => ()
         }
