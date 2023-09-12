@@ -1,4 +1,4 @@
-use std::ops::{ AddAssign, Mul };
+use std::ops::{ AddAssign, Sub, Mul };
 use std::fmt;
 
 #[derive(Debug, Copy, Clone)]
@@ -38,6 +38,17 @@ impl AddAssign for Vec2 {
             x: self.x + other.x,
             y: self.y + other.y,
         };
+    }
+}
+
+impl Sub for Vec2 {
+    type Output = Self;
+
+    fn sub(self, other: Self) -> Self {
+        Self {
+            x: self.x - other.x,
+            y: self.y - other.y,
+        }
     }
 }
 

@@ -1,7 +1,7 @@
 use crate::{ map, vector };
 
-const STEP_SIZE: f32 = 0.1;
-const STEP_LIMIT: u32 = 100;
+const STEP_SIZE: f32 = 0.01;
+const STEP_LIMIT: u32 = 500;
 
 pub fn raycast(map: &map::Map, start: &vector::Vec2, direction: &vector::Vec2) -> (vector::Vec2, Option<u8>) {
     let mut current = start.clone();

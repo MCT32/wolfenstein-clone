@@ -1,4 +1,4 @@
-use crate::{map, player, vector, util, WIDTH};
+use crate::{map, player, vector, util, WIDTH, HEIGHT};
 
 const FOV: f32 = 1.0;
 
@@ -11,7 +11,15 @@ pub fn render(map: &map::Map, player: &player::Player, buffer: &mut softbuffer::
         let (position, wall) = util::raycast(map, &player.position, &direction);
 
         if wall != None {
-            buffer[i as usize] = 0xff;
+            let relative = (position - player.position).rotate(-player.rotation);
+            let distance = relative.y;
+
+            let height = 1.0 / distance;
+            let height = std::cmp::min((height * HEIGHT as f32) as u32, HEIGHT);
+
+            for j in 0..height {
+                buffer[(i + (j + (HEIGHT - height) / 2) * WIDTH) as usize] = 0xFF;
+            }
         }
     }
 }
