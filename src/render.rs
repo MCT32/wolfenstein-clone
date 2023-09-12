@@ -18,7 +18,8 @@ pub fn render(map: &map::Map, player: &player::Player, buffer: &mut softbuffer::
             let height = std::cmp::min((height * HEIGHT as f32) as u32, HEIGHT);
 
             for j in 0..height {
-                buffer[(i + (j + (HEIGHT - height) / 2) * WIDTH) as usize] = color::Color::new(0, 255, 0).to_u32();
+                let pixel = color::Color::interp(color::Color::new(0, 255, 0), color::Color::new(255, 255, 255), distance / 5.0);
+                buffer[(i + (j + (HEIGHT - height) / 2) * WIDTH) as usize] = pixel.to_u32();
             }
         }
     }
