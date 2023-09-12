@@ -27,20 +27,7 @@ fn main() {
     let context = unsafe { softbuffer::Context::new(&window) }.unwrap();
     let mut surface = unsafe { softbuffer::Surface::new(&context, &window) }.unwrap();
 
-    let mut map = map::Map::new(4, 4);
-    map.set(0, 0, 1);
-    map.set(1, 0, 1);
-    map.set(2, 0, 1);
-    map.set(3, 0, 1);
-    map.set(3, 1, 1);
-    map.set(3, 2, 1);
-    map.set(3, 3, 1);
-    map.set(3, 3, 1);
-    map.set(2, 3, 1);
-    map.set(1, 3, 1);
-    map.set(0, 3, 1);
-    map.set(0, 2, 1);
-    map.set(0, 1, 1);
+    let mut map = map::Map::load("test.map");
 
     let mut player = player::Player::new(vector::Vec2::new(2.0, 1.5), 0.0, vector::Vec2::new(0.0, 0.0));
 

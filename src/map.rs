@@ -1,3 +1,6 @@
+use std::fs::File;
+use std::io::Read;
+
 pub struct Map {
     pub width: usize,
     pub height: usize,
@@ -8,6 +11,23 @@ pub struct Map {
 impl Map {
     pub fn new(width: usize, height: usize) -> Self {
         let grid = vec![0; height * width];
+        Self { width, height, grid }
+    }
+
+    pub fn load(filename: &str) -> Self {
+        let mut file = File::open(filename).unwrap();
+
+        let mut width = [0; 4];
+        file.read_exact(&mut width).unwrap();
+        let width = u32::from_le_bytes(width) as usize;
+
+        let mut height = [0; 4];
+        file.read_exact(&mut height).unwrap();
+        let height = u32::from_le_bytes(height) as usize;
+
+        let mut grid = vec![0; height * width];
+        file.read_exact(&mut grid);
+
         Self { width, height, grid }
     }
 
