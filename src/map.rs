@@ -26,7 +26,7 @@ impl Map {
         let height = u32::from_le_bytes(height) as usize;
 
         let mut grid = vec![0; height * width];
-        file.read_exact(&mut grid);
+        file.read_exact(&mut grid).unwrap();
 
         Self { width, height, grid }
     }
@@ -36,7 +36,7 @@ impl Map {
     }
 
     pub fn get(&self, x: usize, y: usize) -> Result<u8, &'static str> {
-        if x < 0 || x >= self.width || y < 0 || y >= self.height { return Err("Out of map bounds") }
+        if x >= self.width || y >= self.height { return Err("Out of map bounds") }
         Ok(self.grid[x + y * self.height])
     }
 }

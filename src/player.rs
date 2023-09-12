@@ -21,7 +21,7 @@ impl Player {
         self.position += self.velocity * delta_time.as_secs_f32();
     }
 
-    pub fn setVelocity(&mut self, velocity: vector::Vec2) {
+    pub fn set_velocity(&mut self, velocity: vector::Vec2) {
         self.velocity = velocity;
     }
 }

@@ -15,6 +15,7 @@ mod map;
 mod player;
 mod vector;
 mod render;
+mod color;
 mod util;
 
 fn main() {
@@ -27,7 +28,7 @@ fn main() {
     let context = unsafe { softbuffer::Context::new(&window) }.unwrap();
     let mut surface = unsafe { softbuffer::Surface::new(&context, &window) }.unwrap();
 
-    let mut map = map::Map::load("test.map");
+    let map = map::Map::load("test.map");
 
     let mut player = player::Player::new(vector::Vec2::new(2.0, 1.5), 0.0, vector::Vec2::new(0.0, 0.0));
 
@@ -84,7 +85,7 @@ fn main() {
 
                 render::render(&map, &player, &mut buffer);
 
-                player.setVelocity(vector::Vec2::new(
+                player.set_velocity(vector::Vec2::new(
                     if keys_pressed.contains(&VirtualKeyCode::D) { 1.0 } else { 0.0 }
                     + if keys_pressed.contains(&VirtualKeyCode::A) { -1.0 } else { 0.0 },
                     if keys_pressed.contains(&VirtualKeyCode::W) { 1.0 } else { 0.0 }
