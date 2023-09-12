@@ -9,6 +9,12 @@ use winit::{
 const WIDTH: u32 = 320;
 const HEIGHT: u32 = 200;
 
+mod map;
+mod player;
+mod vector;
+mod render;
+mod util;
+
 fn main() {
     let event_loop = EventLoop::new();
     let window = WindowBuilder::new()
@@ -18,6 +24,11 @@ fn main() {
 
     let context = unsafe { softbuffer::Context::new(&window) }.unwrap();
     let mut surface = unsafe { softbuffer::Surface::new(&context, &window) }.unwrap();
+
+    let mut map = map::Map::new(4, 4);
+    map.set(0, 1, 1);
+
+    let mut player = player::Player::new(vector::Vec2::new(0.0, 0.0), 0.0);
 
     event_loop.run(move |event, _, control_flow| {
         control_flow.set_poll();
@@ -39,7 +50,9 @@ fn main() {
                     .unwrap();
                 
                 let mut buffer = surface.buffer_mut().unwrap();
-                for pixel in buffer.iter_mut() { *pixel = 0xffffffffu32; }
+                buffer.fill(0xffffff);
+
+                render::render(&map, &player, &mut buffer);
 
                 buffer.present().unwrap();
             },
