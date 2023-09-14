@@ -5,15 +5,13 @@ pub fn raycast(map: &map::Map, start: &vector::Vec2, direction: &vector::Vec2) -
     let mut current = start.clone();
     let dy = direction.y / direction.x.abs();
 
-    if direction.x < 0.0 { println!("Dir: {direction}, Current: {current}, dy: {dy}"); }
-
     if direction.x > 0.0 {
         let dx = current.x.ceil() - current.x;
 
         current.x = current.x.ceil();
         current.y += dx * dy;
     } else {
-        let dx = current.x.floor() - current.x;
+        let dx = current.x - current.x.floor();
 
         current.x = current.x.floor();
         current.y += dx * dy;
@@ -34,8 +32,6 @@ pub fn raycast(map: &map::Map, start: &vector::Vec2, direction: &vector::Vec2) -
             break (current, Some(wall));
         }
         
-        if direction.x < 0.0 { println!("Step: {step}, Current: {current}, dy: {dy}"); }
-
         if direction.x > 0.0 {
             current.x += 1.0;
         } else {
