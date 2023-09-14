@@ -1,13 +1,54 @@
 use crate::{ map, vector };
 
-const STEP_SIZE: f32 = 0.01;
-const STEP_LIMIT: u32 = 500;
-
 pub fn raycast(map: &map::Map, start: &vector::Vec2, direction: &vector::Vec2) -> (vector::Vec2, Option<u8>) {
+    // x
     let mut current = start.clone();
+    let dy = direction.y / direction.x.abs();
 
-    let mut steps = 0;
+    if direction.x < 0.0 { println!("Dir: {direction}, Current: {current}, dy: {dy}"); }
 
+    if direction.x > 0.0 {
+        let dx = current.x.ceil() - current.x;
+
+        current.x = current.x.ceil();
+        current.y += dx * dy;
+    } else {
+        let dx = current.x.floor() - current.x;
+
+        current.x = current.x.floor();
+        current.y += dx * dy;
+    }
+
+    let mut step = 0;
+
+    let x_result = loop {
+        let wall = map.get(current.x as usize, current.y.floor() as usize);
+
+        if wall.is_err() {
+            break (current, None);
+        }
+
+        let wall = wall.unwrap();
+
+        if wall != 0 {
+            break (current, Some(wall));
+        }
+        
+        if direction.x < 0.0 { println!("Step: {step}, Current: {current}, dy: {dy}"); }
+
+        if direction.x > 0.0 {
+            current.x += 1.0;
+        } else {
+            current.x -= 1.0;
+        }
+        current.y += dy;
+
+        step += 1;
+    };
+
+    x_result
+
+    /*
     'step: loop {
         let x = current.x.floor() as i32;
         let y = current.y.floor() as i32;
@@ -25,4 +66,5 @@ pub fn raycast(map: &map::Map, start: &vector::Vec2, direction: &vector::Vec2) -
         if steps == STEP_LIMIT { break (current, None); }
         steps += 1;
     }
+    */
 }
