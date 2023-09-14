@@ -17,8 +17,6 @@ pub fn raycast(map: &map::Map, start: &vector::Vec2, direction: &vector::Vec2) -
         current.y += dx * dy;
     }
 
-    let mut step = 0;
-
     let x_result = loop {
         let wall = map.get(current.x as usize, current.y.floor() as usize);
 
@@ -38,29 +36,48 @@ pub fn raycast(map: &map::Map, start: &vector::Vec2, direction: &vector::Vec2) -
             current.x -= 1.0;
         }
         current.y += dy;
-
-        step += 1;
     };
 
-    x_result
+    // y
+    let mut current = start.clone();
+    let dx = direction.x / direction.y.abs();
 
-    /*
-    'step: loop {
-        let x = current.x.floor() as i32;
-        let y = current.y.floor() as i32;
+    if direction.y > 0.0 {
+        let dy = current.y.ceil() - current.y;
 
-        if x < 0 || x >= map.width as i32 || y < 0 || y >= map.height as i32 { break 'step (current, None); }
+        current.y = current.y.ceil();
+        current.x += dy * dx;
+    } else {
+        let dy = current.y - current.y.floor();
 
-        let wall = map.get(x as usize, y as usize).unwrap();
+        current.y = current.y.floor();
+        current.x += dy * dx;
+    }
+
+    let y_result = loop {
+        let wall = map.get(current.x.floor() as usize, current.y as usize);
+
+        if wall.is_err() {
+            break (current, None);
+        }
+
+        let wall = wall.unwrap();
 
         if wall != 0 {
             break (current, Some(wall));
         }
+        
+        if direction.y > 0.0 {
+            current.y += 1.0;
+        } else {
+            current.y -= 1.0;
+        }
+        current.x += dx;
+    };
 
-        current += *direction * STEP_SIZE;
-
-        if steps == STEP_LIMIT { break (current, None); }
-        steps += 1;
+    if (x_result.0 - *start).length() < (y_result.0 - *start).length() {
+        x_result
+    } else {
+        y_result
     }
-    */
 }
